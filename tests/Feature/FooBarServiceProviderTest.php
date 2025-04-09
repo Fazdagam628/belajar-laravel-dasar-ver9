@@ -34,4 +34,9 @@ class FooBarServiceProviderTest extends TestCase
 
         self::assertEquals('Halo Fauzan', $helloService1->hello('Fauzan'));
     }
+
+    public function testEmpty()
+    {
+        self::assertTrue(true);
+    }
 }
