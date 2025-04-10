@@ -17,3 +17,13 @@ Route::get('/', function () {
     return view('welcome');
     // return "Hello World!";
 });
+
+Route::get('/pzn', function () {
+    return "Hello Programmer zaman now";
+});
+
+Route::redirect('/youtube', 'pzn');
+
+Route::fallback(function () {
+    return "404 By Programmer Zaman Now";
+});
