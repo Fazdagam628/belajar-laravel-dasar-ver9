@@ -87,4 +87,86 @@ Route::post('/input/filter/only', [\App\Http\Controllers\InputController::class,
 Route::post('/input/filter/except', [\App\Http\Controllers\InputController::class, 'filterExcept']);
 Route::post('/input/filter/merge', [\App\Http\Controllers\InputController::class, 'filterMerge']);
 
-Route::post('/file/upload', [\App\Http\Controllers\FileController::class, 'upload']);
+Route::post('/file/upload', [\App\Http\Controllers\FileController::class, 'upload'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+Route::get('/response/hello', [\App\Http\Controllers\ResponseController::class, 'response']);
+Route::get('/response/header', [\App\Http\Controllers\ResponseController::class, 'header']);
+
+Route::prefix("/response/type")->group(function () {
+
+    Route::get('/view', [App\Http\Controllers\ResponseController::class, 'responseView']);
+    Route::get('/json', [App\Http\Controllers\ResponseController::class, 'responseJson']);
+    Route::get('/file', [App\Http\Controllers\ResponseController::class, 'responseFile']);
+    Route::get('/download', [App\Http\Controllers\ResponseController::class, 'responseDownload']);
+});
+
+Route::controller(\App\Http\Controllers\CookieController::class)->group(function () {
+
+    Route::get('/cookie/set', 'createCookie');
+    Route::get('/cookie/get', 'getCookie');
+    Route::get('/cookie/clear', 'clearCookie');
+});
+
+Route::get('/redirect/from', [\App\Http\Controllers\RedirectController::class, 'redirectFrom']);
+Route::get('/redirect/to', [\App\Http\Controllers\RedirectController::class, 'redirectTo']);
+Route::get('/redirect/name', [\App\Http\Controllers\RedirectController::class, 'redirectName']);
+Route::get('/redirect/name/{name}', [\App\Http\Controllers\RedirectController::class, 'redirectHello'])
+    ->name('redirect-hello');
+Route::get('/redirect/named', function () {
+    // return route('redirect-hello', ['name' => 'Fauzan']);
+    // return url()->route('redirect-hello', ['name' => 'Fauzan']);
+    return \Illuminate\Support\Facades\URL::route('redirect-hello', ['name' => 'Fauzan']);
+});
+
+Route::get('/redirect/action', [\App\Http\Controllers\RedirectController::class, 'redirectAction']);
+Route::get('/redirect/away', [\App\Http\Controllers\RedirectController::class, 'redirectAway']);
+
+Route::middleware(['contoh:PZN,401'])->prefix('/middleware')->group(function () {
+    Route::get('/api', function () {
+        return "OK";
+    });
+    Route::get('/group', function () {
+        return "GROUP";
+    });
+});
+
+Route::get('/url/action', function () {
+    // return action([\App\Http\Controllers\FormController::class, 'form'], []);
+    // return url()->action([\App\Http\Controllers\FormController::class, 'form'], []);
+    return \Illuminate\Support\Facades\URL::action([\App\Http\Controllers\FormController::class, 'form'], []);
+});
+
+
+Route::get('/form', [\App\Http\Controllers\FormController::class, 'form']);
+Route::post('/form', [\App\Http\Controllers\FormController::class, 'submitForm']);
+
+Route::get('/url/current', function () {
+    return \Illuminate\Support\Facades\URL::full();
+});
+
+Route::get('/session/create', [\App\Http\Controllers\SessionController::class, 'createSession']);
+Route::get('/session/get', [\App\Http\Controllers\SessionController::class, 'getSession']);
+
+Route::get('/error/sample', function () {
+    throw new Exception("Sample Error");
+});
+
+Route::get('/error/manual', function () {
+    report(new Exception("Sample Error"));
+    return "OK";
+});
+
+Route::get('/error/validation', function () {
+    throw new \App\Exceptions\ValidationException("Validation Error");
+});
+
+Route::get('/abort/400', function () {
+    abort(400, "Ups Validation Error");
+});
+Route::get('/abort/401', function () {
+    abort(401);
+});
+Route::get('/abort/500', function () {
+    abort(500);
+});
